@@ -1,102 +1,121 @@
 import styles from "./index.less";
 import React, { useState } from "react";
 import {Table, Radio, Divider, Space} from "antd";
-
+import request from '@/utils/request';
 const columns = [
   {
-    title: "Name",
-    dataIndex: "name",
-    render: (text) => <a>{text}</a>,
+    title: "任务名称",
+    dataIndex: "taskName",
   },
   {
-    title: "Age",
-    dataIndex: "age",
+    title: "调用地址",
+    dataIndex: "targetUrl",
   },
   {
-    title: "Address",
-    dataIndex: "address",
+    title: "调用方法",
+    dataIndex: "method",
+  },
+  {
+    title: "执行周期",
+    dataIndex: "cron",
+  },
+  {
+    title: "参数类型",
+    dataIndex: "paramType",
+    render:paramType=>(
+     <span>{paramType.displayName}</span>
+    )
+  },
+  {
+    title: "参数",
+    dataIndex: "param",
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+    render:paramType=>(
+      <span>{paramType.displayName}</span>
+    )
   },
   {
     title: '操作',
     dataIndex: 'operation',
     render: (_, record: { key: React.Key }) =>
-      // this.state.dataSource.length >= 1 ? (
-      //   <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-      //     <a>Delete</a>
-      //   </Popconfirm>
-      // ) :
       ( <Space size="middle">
         <a>编辑</a>
+        {record.status.name=='USING'?<a>暂停</a>:<a>恢复</a>}
         <a>删除</a>
       </Space>)
   }
 ];
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Disabled User",
-    age: 99,
-    address: "Sidney No. 1 Lake Park",
-  },
-];
+class App extends React.Component {
+  state = {
+    data: [],
+    pagination: {},
+    loading: false
+  };
 
-// rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows
-    );
-  },
-  getCheckboxProps: (record) => ({
-    disabled: record.name === "Disabled User", // Column configuration not to be checked
-    name: record.name,
-  }),
-};
+  componentDidMount() {
+    this.fetch();
+  }
 
-const Demo = () => {
-  const [selectionType, setSelectionType] = useState("checkbox");
+  handleTableChange = (pagination, filters, sorter) => {
+    const pager = { ...this.state.pagination };
+    pager.current = pagination.current;
+    this.setState({
+      pagination: pager
+    });
+    this.fetch({
+      results: pagination.pageSize,
+      page: pagination.current,
+      sortField: sorter.field,
+      sortOrder: sorter.order,
+      ...filters
+    });
+  };
 
-  return (
-    <div>
+  fetch = (params = {}) => {
+    console.log("params:", params);
+    this.setState({ loading: true });
+    let that=this;
+    request()
+      .post("http://127.0.0.1:8096/task/list", {
+        data:params
+      })
+      .then(function(data) {
+        const pagination = { ...that.state.pagination };
+        pagination.total = data.total;
+        console.log( data.taskInfos)
+        that.setState({
+          loading: false,
+          data: data.taskInfos,
+          pagination
+        });
 
-      <Divider />
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
 
+  render() {
+    return (
       <Table
-        rowSelection={{
-          type: "Checkbox",
-          ...rowSelection,
-        }}
         columns={columns}
-        dataSource={data}
+        rowKey={record => record.code}
+        dataSource={this.state.data}
+        pagination={this.state.pagination}
+        loading={this.state.loading}
+        onChange={this.handleTableChange}
       />
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default () => (
   <div className={styles.container}>
     <div id="components-table-demo-row-selection">
-      <Demo />
+      <App />
     </div>
   </div>
 );

@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import {Api} from "@/services/api";
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -48,10 +49,16 @@ const errorHandler = (error) => {
 /**
  * 配置request请求时的默认参数
  */
+const getToken=()=>{
+  // return  localStorage.getItem("X-TOKEN");
+  return  "4ee5024b4b94426aa4a45e11f32c8eca";
+}
 
 const request = extend({
   errorHandler,
   // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include', // 默认请求是否带上cookie
+  prefix:Api.baseUrl,
+  headers:{"X-TOKEN":getToken()}
 });
 export default request;

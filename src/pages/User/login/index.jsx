@@ -11,7 +11,7 @@ import { Alert, Space, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha } from '@/services/login';
+// import { getFakeCaptcha } from '@/services/login';
 import styles from './index.less';
 
 const LoginMessage = ({ content }) => (
@@ -208,11 +208,11 @@ const Login = (props) => {
                 },
               ]}
               onGetCaptcha={async (mobile) => {
-                const result = await getFakeCaptcha(mobile);
-
-                if (result === false) {
-                  return;
-                }
+                // const result = await getFakeCaptcha(mobile);
+                //
+                // if (result === false) {
+                //   return;
+                // }
 
                 message.success('获取验证码成功！验证码为：1234');
               }}

@@ -2,9 +2,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
 import styles from './index.less';
-import TaskListTable from './TaskListTable';
-import AddTaskModalBasic from './AddTaskModalBasic';
-
+import GridFlexAlign from './GridFlexAlign';
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
@@ -13,9 +11,9 @@ export default () => {
     }, 3000);
   }, []);
   return (
-    <PageContainer  className={styles.main}>
-      <AddTaskModalBasic />
-      <TaskListTable />
+    <PageContainer content="这是一个新页面，从这里进行开发！" className={styles.main}>
+
+      <GridFlexAlign />
       <div
         style={{
           paddingTop: 100,

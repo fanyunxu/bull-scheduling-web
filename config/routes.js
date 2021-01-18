@@ -50,16 +50,16 @@ export default [
                 ],
               },
               {
-                name: 'list.table-list',
-                icon: 'table',
-                path: '/list',
-                component: './TableList',
-              },
-              {
-                name: '空白页面',
+                name: '任务管理',
                 icon: 'smile',
                 path: '/taskpage',
                 component: './Task',
+              },
+              {
+                name: '执行记录',
+                icon: 'smile',
+                path: '/exerecordpage',
+                component: './ExeRecordPage',
               },
               {
                 component: './404',
