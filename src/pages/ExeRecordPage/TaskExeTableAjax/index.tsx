@@ -1,53 +1,69 @@
 import React from "react";
 import styles from "./index.less";
 import { Table } from "antd";
-import reqwest from "reqwest";
+import {Api} from '@/services/api';
+import request from '@/utils/request';
 
 const columns = [
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "开始执行时间",
+    dataIndex: "gmtStart",
     sorter: true,
-    render: name => `${name.first} ${name.last}`,
     width: "20%"
   },
   {
-    title: "Gender",
-    dataIndex: "gender",
-    filters: [
-      { text: "Male", value: "male" },
-      { text: "Female", value: "female" }
-    ],
+    title: "结束执行时间",
+    dataIndex: "gmtEnd",
     width: "20%"
   },
   {
-    title: "Email",
-    dataIndex: "email"
+    title: "执行结果",
+    dataIndex: "results",
+    render:paramType=>(
+      <span>{paramType.displayName}</span>
+    )
   }
 ];
 
 class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.setState({ data: props.exeRecordData });
+  }
+
   state = {
+    record: {},
     data: [],
     pagination: {},
     loading: false
   };
 
+  refresh=(record)=>{
+    this.setState({
+      record:record
+    })
+    this.fetch({
+      taskCode:record.code,
+    });
+  }
   componentDidMount() {
-    this.fetch();
+    // this.fetch();
   }
 
   handleTableChange = (pagination, filters, sorter) => {
     const pager = { ...this.state.pagination };
     pager.current = pagination.current;
+    const record={...this.state.record};
     this.setState({
       pagination: pager
     });
     this.fetch({
-      results: pagination.pageSize,
+      size: pagination.pageSize,
       page: pagination.current,
       sortField: sorter.field,
       sortOrder: sorter.order,
+      taskCode:record.code,
       ...filters
     });
   };
@@ -55,22 +71,17 @@ class App extends React.Component {
   fetch = (params = {}) => {
     console.log("params:", params);
     this.setState({ loading: true });
-    reqwest({
-      url: "https://randomuser.me/api",
-      method: "get",
-      data: {
-        results: 10,
-        ...params
-      },
-      type: "json"
+    request(Api.taskExeRecord, {
+      method: 'POST',
+      data: params,
     }).then(data => {
       const pagination = { ...this.state.pagination };
       // Read total count from server
       // pagination.total = data.totalCount;
-      pagination.total = 200;
+      pagination.total = data.total;
       this.setState({
         loading: false,
-        data: data.results,
+        data: data.recordInfos,
         pagination
       });
     });
@@ -78,22 +89,19 @@ class App extends React.Component {
 
   render() {
     return (
-      <Table
-        columns={columns}
-        rowKey={record => record.login.uuid}
-        dataSource={this.state.data}
-        pagination={this.state.pagination}
-        loading={this.state.loading}
-        onChange={this.handleTableChange}
-      />
+      <div className={styles.container}>
+        <div id="components-table-demo-ajax">
+          <Table
+            columns={columns}
+            rowKey={record => record.code}
+            dataSource={this.state.data}
+            pagination={this.state.pagination}
+            loading={this.state.loading}
+            onChange={this.handleTableChange}
+          />
+        </div>
+      </div>
     );
   }
 }
-
-export default () => (
-  <div className={styles.container}>
-    <div id="components-table-demo-ajax">
-      <App />
-    </div>
-  </div>
-);
+export default App;

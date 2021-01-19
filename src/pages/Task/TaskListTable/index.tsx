@@ -2,6 +2,7 @@ import styles from "./index.less";
 import React, { useState } from "react";
 import {Table, Radio, Divider, Space} from "antd";
 import request from '@/utils/request';
+import {Api} from '@/services/api';
 const columns = [
   {
     title: "任务名称",
@@ -78,10 +79,10 @@ class App extends React.Component {
     console.log("params:", params);
     this.setState({ loading: true });
     let that=this;
-    request()
-      .post("http://127.0.0.1:8096/task/list", {
-        data:params
-      })
+    request(Api.taskList, {
+      method: 'POST',
+      data: params,
+    })
       .then(function(data) {
         const pagination = { ...that.state.pagination };
         pagination.total = data.total;

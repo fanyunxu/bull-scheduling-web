@@ -7,18 +7,18 @@ const UserModel = {
   },
   effects: {
     *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
+      let item =yield sessionStorage.getItem("X-USER");
       yield put({
         type: 'save',
-        payload: response,
+        payload: JSON.parse(item),
       });
     },
 
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      let item =yield sessionStorage.getItem("X-USER");
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: JSON.parse(item),
       });
     },
   },

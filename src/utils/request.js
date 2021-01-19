@@ -50,8 +50,8 @@ const errorHandler = (error) => {
  * 配置request请求时的默认参数
  */
 const getToken=()=>{
-  // return  localStorage.getItem("X-TOKEN");
-  return  "4ee5024b4b94426aa4a45e11f32c8eca";
+  let token= sessionStorage.getItem("X-TOKEN");
+  return  token;
 }
 
 const request = extend({
