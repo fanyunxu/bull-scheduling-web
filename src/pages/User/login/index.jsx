@@ -11,8 +11,8 @@ import { Alert, Space, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-// import { getFakeCaptcha } from '@/services/login';
 import styles from './index.less';
+import md5 from 'js-md5';
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -33,6 +33,8 @@ const Login = (props) => {
 
   const handleSubmit = (values) => {
     const { dispatch } = props;
+    console.log("111111",md5);
+    values.pwd=md5(values.pwd);
     dispatch({
       type: 'login/login',
       payload: { ...values, type },
@@ -68,13 +70,13 @@ const Login = (props) => {
               defaultMessage: '账户密码登录',
             })}
           />
-          <Tabs.TabPane
-            key="mobile"
-            tab={intl.formatMessage({
-              id: 'pages.login.phoneLogin.tab',
-              defaultMessage: '手机号登录',
-            })}
-          />
+          {/*<Tabs.TabPane*/}
+          {/*  key="mobile"*/}
+          {/*  tab={intl.formatMessage({*/}
+          {/*    id: 'pages.login.phoneLogin.tab',*/}
+          {/*    defaultMessage: '手机号登录',*/}
+          {/*  })}*/}
+          {/*/>*/}
         </Tabs>
 
         {status === 'error' && loginType === 'account' && !submitting && (
@@ -88,7 +90,7 @@ const Login = (props) => {
         {type === 'account' && (
           <>
             <ProFormText
-              name="userName"
+              name="account"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -110,7 +112,7 @@ const Login = (props) => {
               ]}
             />
             <ProFormText.Password
-              name="password"
+              name="pwd"
               fieldProps={{
                 size: 'large',
                 prefix: <LockTwoTone className={styles.prefixIcon} />,
@@ -236,12 +238,12 @@ const Login = (props) => {
           </a>
         </div>
       </ProForm>
-      <Space className={styles.other}>
-        <FormattedMessage id="pages.login.loginWith" defaultMessage="其他登录方式" />
-        <AlipayCircleOutlined className={styles.icon} />
-        <TaobaoCircleOutlined className={styles.icon} />
-        <WeiboCircleOutlined className={styles.icon} />
-      </Space>
+      {/*<Space className={styles.other}>*/}
+      {/*  <FormattedMessage id="pages.login.loginWith" defaultMessage="其他登录方式" />*/}
+      {/*  <AlipayCircleOutlined className={styles.icon} />*/}
+      {/*  <TaobaoCircleOutlined className={styles.icon} />*/}
+      {/*  <WeiboCircleOutlined className={styles.icon} />*/}
+      {/*</Space>*/}
     </div>
   );
 };
