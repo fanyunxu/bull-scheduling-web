@@ -33,7 +33,6 @@ const Login = (props) => {
 
   const handleSubmit = (values) => {
     const { dispatch } = props;
-    console.log("111111",md5);
     values.pwd=md5(values.pwd);
     dispatch({
       type: 'login/login',

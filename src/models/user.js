@@ -7,7 +7,7 @@ const UserModel = {
   },
   effects: {
     *fetch(_, { call, put }) {
-      let item =yield sessionStorage.getItem("X-USER");
+      let item =yield localStorage.getItem("X-USER");
       yield put({
         type: 'save',
         payload: JSON.parse(item),
@@ -15,7 +15,7 @@ const UserModel = {
     },
 
     *fetchCurrent(_, { call, put }) {
-      let item =yield sessionStorage.getItem("X-USER");
+      let item =yield localStorage.getItem("X-USER");
       yield put({
         type: 'saveCurrentUser',
         payload: JSON.parse(item),

@@ -5,6 +5,7 @@ export const Api={
   loginOut:"/employee/loginOut", //登出
   taskList:"/task/list", //定时任务列表
   editTask:"/task/edit", //编辑定时任务
-  taskExeRecord:"/task/taskExeRecord"//任务执行记录
+  taskExeRecord:"/task/taskExeRecord",//任务执行记录
+  getGroups:"/task/group/get",//任务执行记录
 }
 

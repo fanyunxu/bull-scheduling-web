@@ -20,8 +20,8 @@ const Model = {
       if (response.success === true) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
-        yield sessionStorage.setItem("X-TOKEN",response.token);
-        yield sessionStorage.setItem("X-USER",JSON.stringify(response.employeeInfo));
+        localStorage.setItem("X-TOKEN",response.token);
+        localStorage.setItem("X-USER",JSON.stringify(response.employeeInfo));
         message.success('🎉 🎉 🎉  登录成功！');
         let { redirect } = params;
         if (redirect) {

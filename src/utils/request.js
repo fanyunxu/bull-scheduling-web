@@ -5,6 +5,8 @@
 import { extend } from 'umi-request';
 import { notification } from 'antd';
 import {Api} from "@/services/api";
+import React from "react";
+import { Redirect } from 'umi';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -50,8 +52,8 @@ const errorHandler = (error) => {
  * 配置request请求时的默认参数
  */
 const getToken=()=>{
-  let token= sessionStorage.getItem("X-TOKEN");
-  return  token;
+  let token= localStorage.getItem("X-TOKEN");
+  return token;
 }
 
 const request = extend({
@@ -59,6 +61,50 @@ const request = extend({
   // 默认错误处理
   // credentials: 'include', // 默认请求是否带上cookie
   prefix:Api.baseUrl,
-  headers:{"X-TOKEN":getToken()}
+});
+
+request.interceptors.request.use(async (url, options) => {
+
+  let c_token = localStorage.getItem("X-TOKEN");
+  if (c_token) {
+    const headers = {
+      'X-TOKEN': c_token
+    };
+    return (
+      {
+        url: url,
+        options: { ...options, headers: headers },
+      }
+    );
+  } else {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'x-auth-token': c_token
+    };
+    return (
+      {
+        url: url,
+        options: { ...options },
+      }
+    );
+  }
+})
+request.interceptors.response.use(async (response, options) => {
+  let result;
+  const data = await response.clone().json();
+  if (data.rstCode !==0) {
+    localStorage.removeItem("X-TOKEN");
+    // const queryString = stringify({
+    //   redirect: window.location.href,
+    // });
+    // if (!isLogin && window.location.pathname !== '/user/login') {
+    //   return <Redirect to={`/user/login?${queryString}`} />;
+    // }
+
+  } else {
+    result = response;
+  }
+  return result;
 });
 export default request;

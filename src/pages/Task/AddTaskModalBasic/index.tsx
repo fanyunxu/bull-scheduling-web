@@ -1,9 +1,40 @@
 import React from "react";
 import styles from "./index.less";
+import {Api} from '@/services/api';
+import request from '@/utils/request';
 import {Modal, Button, Form, Input, Select} from "antd";
-
+import {FormInstance} from "antd/es/form";
 class App extends React.Component {
-  state = { visible: false };
+
+  formRef = React.createRef<FormInstance>();
+  state = {
+    visible: false
+    ,groupValues:[],
+    formTest:null
+  };
+
+ componentDidMount(): void {
+   this.getGroupValues()
+ }
+
+  /**
+   * 获取分组值
+   */
+ getGroupValues=()=>{
+   let that=this;
+   request(Api.getGroups, {
+     method: 'POST',
+     data: {},
+   })
+     .then(function(data) {
+       that.setState({
+         groupValues: data.labelInfos,
+       });
+     })
+     .catch(function(error) {
+       console.log(error);
+     });
+ }
 
   showModal = () => {
     this.setState({
@@ -25,7 +56,8 @@ class App extends React.Component {
     },
   };
   handleOk = e => {
-    console.log(e);
+    debugger
+    console.log("123123123",this.formRef.current!.getFieldsValue(true));
     this.setState({
       visible: false
     });
@@ -38,6 +70,7 @@ class App extends React.Component {
     });
   };
    onFinish = (values) => {
+     debugger
     console.log('Success:', values);
   };
 
@@ -45,6 +78,7 @@ class App extends React.Component {
     console.log('Failed:', errorInfo);
   };
   render() {
+
     return (
       <div>
         <Button type="primary" onClick={this.showModal}>
@@ -56,13 +90,22 @@ class App extends React.Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          <Form
+
+          <Form ref={this.formRef}
             {...(this.layout)}
             name="basic"
-            initialValues={{ remember: true }}
             onFinish={this.onFinish}
             onFinishFailed={this.onFinishFailed}
           >
+            <Form.Item
+              label="分组"
+              name="groupCode"
+              rules={[{ required: true, message: '请选择分组!' }]}
+
+            >
+              <Select options={this.state.groupValues}  >
+              </Select>
+            </Form.Item>
             <Form.Item
               label="任务名称"
               name="taskName"
@@ -108,7 +151,7 @@ class App extends React.Component {
             <Form.Item
               label="接口参数"
               name="param"
-              rules={[{ required: true, message: '请输入接口参数!' }]}
+              rules={[{ required: false, message: '请输入接口参数!' }]}
             >
               <Input.TextArea  />
             </Form.Item>
