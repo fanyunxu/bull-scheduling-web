@@ -5,25 +5,32 @@ import styles from './index.less';
 import TaskListTable from './TaskListTable';
 import AddTaskModalBasic from './AddTaskModalBasic';
 
-export default () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
+class App extends React.Component {
+
+state={
+  loading: false
+}
+refreshTaskTable=()=>{
+  this.child.fetch();
+}
+onRef=(ref)=>{
+  this.child = ref;
+}
+render() {
   return (
     <PageContainer  className={styles.main}>
-      <AddTaskModalBasic />
-      <TaskListTable />
+      <AddTaskModalBasic  refreshTaskTable={this.refreshTaskTable}/>
+      <TaskListTable ref={this.onRef}/>
       <div
         style={{
           paddingTop: 100,
           textAlign: 'center',
         }}
       >
-        <Spin spinning={loading} size="large" />
+        <Spin spinning={this.state.loading} size="large" />
       </div>
     </PageContainer>
   );
-};
+  }
+  }
+export default App;

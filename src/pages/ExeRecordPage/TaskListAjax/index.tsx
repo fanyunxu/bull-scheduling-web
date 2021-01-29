@@ -26,7 +26,7 @@ const columns = [
   // }
 ];
 
-class App extends React.Component {
+ class App extends React.Component {
 
   state = {
     data: [],

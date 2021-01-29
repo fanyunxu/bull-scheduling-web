@@ -59,7 +59,6 @@ class App extends React.Component {
   componentDidMount() {
     this.fetch();
   }
-
   handleTableChange = (pagination, filters, sorter) => {
     const pager = { ...this.state.pagination };
     pager.current = pagination.current;
@@ -101,6 +100,8 @@ class App extends React.Component {
 
   render() {
     return (
+      <div className={styles.container}>
+        <div id="components-table-demo-row-selection">
       <Table
         columns={columns}
         rowKey={record => record.code}
@@ -109,14 +110,10 @@ class App extends React.Component {
         loading={this.state.loading}
         onChange={this.handleTableChange}
       />
+        </div>
+      </div>
     );
   }
 }
 
-export default () => (
-  <div className={styles.container}>
-    <div id="components-table-demo-row-selection">
-      <App />
-    </div>
-  </div>
-);
+export default App;

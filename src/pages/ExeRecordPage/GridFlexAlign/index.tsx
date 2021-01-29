@@ -3,7 +3,6 @@ import styles from "./index.less";
 import TaskListAjax from '../TaskListAjax';
 import TaskExeTableAjax from '../TaskExeTableAjax';
 import {Row, Col, Divider, Table} from "antd";
-import {PageContainer} from "@ant-design/pro-layout";
 
 
 class App extends React.Component {

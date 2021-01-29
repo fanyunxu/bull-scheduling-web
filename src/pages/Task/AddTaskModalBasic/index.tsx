@@ -4,15 +4,19 @@ import {Api} from '@/services/api';
 import request from '@/utils/request';
 import {Modal, Button, Form, Input, Select} from "antd";
 import {FormInstance} from "antd/es/form";
+
 class App extends React.Component {
 
   formRef = React.createRef<FormInstance>();
+
   state = {
     visible: false
     ,groupValues:[],
     formTest:null
   };
-
+  constructor(props) {
+    super(props);
+  }
  componentDidMount(): void {
    this.getGroupValues()
  }
@@ -56,8 +60,20 @@ class App extends React.Component {
     },
   };
   handleOk = e => {
+    let params = this.formRef.current!.getFieldsValue(true);
+    let that=this;
     debugger
-    console.log("123123123",this.formRef.current!.getFieldsValue(true));
+    request(Api.editTask, {
+      method: 'POST',
+      data: params,
+    })
+      .then(function(data) {
+        debugger
+        that.props.refreshTaskTable();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
     this.setState({
       visible: false
     });
@@ -70,7 +86,6 @@ class App extends React.Component {
     });
   };
    onFinish = (values) => {
-     debugger
     console.log('Success:', values);
   };
 
@@ -80,6 +95,8 @@ class App extends React.Component {
   render() {
 
     return (
+      <div className={styles.container}>
+        <div id="components-modal-demo-basic">
       <div>
         <Button type="primary" onClick={this.showModal}>
           新增
@@ -125,7 +142,7 @@ class App extends React.Component {
               name="method"
               rules={[{ required: true, message: '请选择方法!' }]}
             >
-              <Select  defaultValue={"POST"}>
+              <Select  >
                 <Option value="POST">POST</Option>
                 <Option value="GET">GET</Option>
               </Select>
@@ -143,7 +160,7 @@ class App extends React.Component {
               name="paramType"
               rules={[{ required: true, message: '请选择参数类型!' }]}
             >
-              <Select  defaultValue={"JSON"}>
+              <Select  >
                 <Option value="JSON">JSON</Option>
                 <Option value="FORM">FORM</Option>
               </Select>
@@ -158,14 +175,10 @@ class App extends React.Component {
           </Form>
         </Modal>
       </div>
+        </div>
+      </div>
     );
   }
 }
 
-export default () => (
-  <div className={styles.container}>
-    <div id="components-modal-demo-basic">
-      <App />
-    </div>
-  </div>
-);
+export default App;

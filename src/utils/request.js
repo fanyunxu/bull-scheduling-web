@@ -2,12 +2,13 @@
  * request 网络请求工具
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
-import { extend } from 'umi-request';
-import { notification } from 'antd';
+
+import axios from 'axios'
+import {notification} from 'antd';
 import {Api} from "@/services/api";
 import React from "react";
-import { Redirect } from 'umi';
-
+import { history } from 'umi';
+import { stringify } from 'querystring';
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -28,6 +29,33 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
+axios.defaults.baseURL =Api.baseUrl;
+
+
+const request = axios.create({
+  xsrfCookieName: 'xsrf-token'
+});
+
+request.interceptors.request.use(function (config) {
+  config.headers['X-TOKEN']=localStorage.getItem("X-TOKEN");
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
+request.interceptors.response.use(function (response) {
+    if (response.data.rstCode ===3) {
+      localStorage.removeItem("X-TOKEN");
+      const queryString = stringify({
+        redirect: window.location.href,
+      });
+      if (window.location.pathname !== '/user/login') {
+        history.push(`/user/login?${queryString}`);
+      }
+    }
+  return response.data
+}, function (error) {
+  return Promise.reject(error);
 
 const errorHandler = (error) => {
   const { response } = error;
@@ -55,56 +83,59 @@ const getToken=()=>{
   let token= localStorage.getItem("X-TOKEN");
   return token;
 }
-
-const request = extend({
-  errorHandler,
-  // 默认错误处理
-  // credentials: 'include', // 默认请求是否带上cookie
-  prefix:Api.baseUrl,
-});
-
-request.interceptors.request.use(async (url, options) => {
-
-  let c_token = localStorage.getItem("X-TOKEN");
-  if (c_token) {
-    const headers = {
-      'X-TOKEN': c_token
-    };
-    return (
-      {
-        url: url,
-        options: { ...options, headers: headers },
-      }
-    );
-  } else {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'x-auth-token': c_token
-    };
-    return (
-      {
-        url: url,
-        options: { ...options },
-      }
-    );
-  }
-})
-request.interceptors.response.use(async (response, options) => {
-  let result;
-  const data = await response.clone().json();
-  if (data.rstCode !==0) {
-    localStorage.removeItem("X-TOKEN");
-    // const queryString = stringify({
-    //   redirect: window.location.href,
-    // });
-    // if (!isLogin && window.location.pathname !== '/user/login') {
-    //   return <Redirect to={`/user/login?${queryString}`} />;
-    // }
-
-  } else {
-    result = response;
-  }
-  return result;
+//
+// const request = extend({
+//   errorHandler,
+//   // 默认错误处理
+//   // credentials: 'include', // 默认请求是否带上cookie
+//   prefix:Api.baseUrl,
+// });
+//
+// request.interceptors.request.use(async (url, options) => {
+//
+//   let c_token = localStorage.getItem("X-TOKEN");
+//   if (c_token) {
+//     const headers = {
+//       'X-TOKEN': c_token
+//     };
+//     return (
+//       {
+//         url: url,
+//         options: { ...options, headers: headers },
+//       }
+//     );
+//   } else {
+//     const headers = {
+//       'Content-Type': 'application/json',
+//       'Accept': 'application/json',
+//       'x-auth-token': c_token
+//     };
+//     return (
+//       {
+//         url: url,
+//         options: { ...options },
+//       }
+//     );
+//   }
+// })
+// request.interceptors.response.use(async (response, options) => {
+//   let result;
+//   const data = await response.clone().json();
+//   debugger
+//   if (data.rstCode ===3) {
+//     localStorage.removeItem("X-TOKEN");
+//     // const queryString = JSON.stringify({
+//     //   redirect: window.location.href,
+//     // });
+//     // debugger
+//     // if ( window.location.pathname !== '/user/login') {
+//     //   router.push(`/user/login`);
+//     //   // return <Redirect to={`/user/login?${queryString}`} />;
+//     // }
+//
+//   }
+//   result = response;
+//   return result;
+// });
 });
 export default request;
